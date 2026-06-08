@@ -26,15 +26,39 @@ const adStyles = [
 ];
 
 const plans = [
-  { name: "FREE",   price: "₱0",     period: "/mo", num: "01", features: ["3 generations/month","Listing description only","English only"],                                              cta: "Get started", highlight: false },
-  { name: "PRO",    price: "₱499",   period: "/mo", num: "02", badge: "Most Popular", features: ["Unlimited generations","All 4 content types","English + Filipino","All ad styles","Full listing history"], cta: "Start Pro",    highlight: true  },
-  { name: "AGENCY", price: "₱1,499", period: "/mo", num: "03", features: ["Everything in Pro","5 team members","Bulk generation","Priority support"],                                  cta: "Contact us",  highlight: false },
+  { name: "FREE",   price: "₱0",     period: "/mo", num: "01", badge: "Start free",  badgeGreen: true,  features: ["3 generations/month","Listing description only","English only"],                                              cta: "Get started", highlight: false },
+  { name: "PRO",    price: "₱499",   period: "/mo", num: "02", badge: "Most Popular", badgeGreen: false, features: ["Unlimited generations","All 4 content types","English + Filipino","All ad styles","Full listing history"], cta: "Start Pro",    highlight: true  },
+  { name: "AGENCY", price: "₱1,499", period: "/mo", num: "03", badge: undefined,      badgeGreen: false, features: ["Everything in Pro","5 team members","Bulk generation","Priority support"],                                cta: "Contact us",  highlight: false },
 ];
 
 const testimonials = [
   { name: "Maria Santos",   role: "Real Estate Broker, Quezon City", body: "I used to spend 2 hours writing one listing. Now I generate 10 listings in the same time. ListifyPH is a game-changer.",                      initials: "MS", grad: "linear-gradient(135deg,#1D4ED8,#3B82F6)" },
   { name: "Carlo Reyes",    role: "Property Developer, BGC",         body: "The Filipino version feature is brilliant. My clients respond so much better to Tagalog copy. Sales conversions are up 40%.",                  initials: "CR", grad: "linear-gradient(135deg,#7C3AED,#A855F7)" },
   { name: "Ana Dela Cruz",  role: "Solo Agent, Cebu",                body: "As a one-person team I needed to scale. ListifyPH lets me look like a full marketing agency. Worth every peso.",                               initials: "AD", grad: "linear-gradient(135deg,#059669,#10B981)" },
+];
+
+const stats = [
+  { value: 50,   suffix: "+",    label: "Active Agents" },
+  { value: 1000, suffix: "+",    label: "Listings Generated" },
+  { value: 3,    suffix: " hrs", label: "Saved Per Agent" },
+  { value: 4,    suffix: "",     label: "Content Types" },
+];
+
+const marqueeItems = [
+  "✓ Agents from BGC","✓ Makati","✓ Cebu","✓ Davao","✓ Bacolod",
+  "✓ Quezon City","✓ Taguig","✓ Pasig","✓ Mandaluyong",
+  "✓ Paranaque","✓ Las Pinas","✓ Antipolo","✓ Iloilo","✓ Cagayan de Oro",
+];
+
+const faqs = [
+  { q: "Is ListifyPH free to use?",             a: "Yes! We have a free plan that gives you 3 listing description generations per month — no credit card required. Upgrade to Pro when you're ready for unlimited access and all content types." },
+  { q: "What types of content can I generate?", a: "ListifyPH generates four types: listing descriptions (SEO-optimised), Facebook posts, Facebook ad copy (3 variations), and Instagram captions. All from a single property input." },
+  { q: "Can it write in Filipino (Tagalog)?",   a: "Absolutely. Pro and Agency subscribers can generate content in English, Filipino (Tagalog), or both at once. Great for reaching local buyers in their preferred language." },
+  { q: "How accurate is AI-generated content?", a: "The AI generates compelling, professional content based on the details you provide. Always review and verify property details like price and size before publishing." },
+  { q: "Can I cancel my subscription anytime?", a: "Yes, anytime from your Settings page. Your subscription stays active until the end of the billing period, then reverts to free. No penalties, no questions asked." },
+  { q: "What payment methods are accepted?",    a: "Payments are processed by PayMongo. We accept GCash, Maya, and all major credit and debit cards (Visa, Mastercard)." },
+  { q: "Is my property data kept private?",     a: "Yes. Property details you enter are used only to generate your content. We don't share or sell your data. All data is encrypted and stored on Supabase infrastructure." },
+  { q: "Can I use this for pre-selling?",       a: "Yes — ListifyPH includes a FOMO ad style specifically for pre-selling and off-plan properties. It emphasises scarcity, exclusivity, and upcoming price increases to drive inquiries." },
 ];
 
 const demoTabs = [
@@ -160,8 +184,8 @@ export default function LandingPage() {
                 <div style={{ display:"flex", gap:6 }}>
                   {demoTabs.map((tab, i) => (
                     <button key={tab.label} onClick={() => setActiveTab(i)}
-                      style={{ padding:"5px 14px", borderRadius:8, fontSize:12, fontWeight:600, cursor:"pointer", border:"none", transition:"background 0.28s, color 0.28s",
-                        background: activeTab === i ? "linear-gradient(135deg,#1D4ED8,#3B82F6)" : "rgba(255,255,255,0.05)",
+                      style={{ padding:"10px 20px", borderRadius:8, fontSize:12, fontWeight:600, cursor:"pointer", border:"none", transition:"background 0.28s, color 0.28s",
+                        background: activeTab === i ? "linear-gradient(135deg,#1D4ED8,#3B82F6)" : "var(--bg-elevated)",
                         color: activeTab === i ? "#fff" : "var(--text-secondary)",
                       }}
                     >{tab.label}</button>
@@ -171,9 +195,29 @@ export default function LandingPage() {
                   ⚡ Generated in 2.3s
                 </div>
               </div>
-              <p ref={typingRef} style={{ fontSize:13, color:"var(--text-secondary)", lineHeight:1.8, minHeight:80, whiteSpace:"pre-line" }} />
+              <p ref={typingRef} style={{ fontSize:"0.9rem", color:"var(--text-secondary)", lineHeight:1.75, minHeight:80, whiteSpace:"pre-line" }} />
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* ── SOCIAL PROOF BAR ──────────────────────────── */}
+      <div style={{ background:"var(--bg-surface)", borderTop:"1px solid var(--border)", borderBottom:"1px solid var(--border)", padding:"20px 0", overflow:"hidden" }}>
+        <div style={{ maskImage:"linear-gradient(to right,transparent,black 10%,black 90%,transparent)", WebkitMaskImage:"linear-gradient(to right,transparent,black 10%,black 90%,transparent)" }}>
+          <div style={{ display:"flex", gap:48, animation:"marquee 30s linear infinite", width:"max-content" }}>
+            {[...marqueeItems, ...marqueeItems].map((item, i) => (
+              <span key={i} style={{ fontSize:13, fontWeight:600, color:"var(--text-secondary)", whiteSpace:"nowrap" }}>{item}</span>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* ── STATS ─────────────────────────────────────── */}
+      <section style={{ background:"var(--bg-primary)", padding:"80px 24px" }}>
+        <div style={{ maxWidth:960, margin:"0 auto", display:"flex", flexWrap:"wrap", gap:24, justifyContent:"center" }}>
+          {stats.map(({ value, suffix, label }) => (
+            <StatCard key={label} value={value} suffix={suffix} label={label} />
+          ))}
         </div>
       </section>
 
@@ -208,6 +252,41 @@ export default function LandingPage() {
 
       <hr className="section-divider" />
 
+      {/* ── BEFORE / AFTER ────────────────────────────── */}
+      <section style={{ background:"var(--bg-surface)", padding:"110px 24px" }}>
+        <div style={{ maxWidth:1060, margin:"0 auto" }}>
+          <SectionHeader label="The Difference" title="Generic AI vs ListifyPH" sub="See what actually happens when you use a tool built specifically for Philippine real estate." />
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(300px, 1fr))", gap:28 }}>
+            <div className="reveal" style={{ background:"rgba(239,68,68,0.04)", border:"1px solid rgba(239,68,68,0.2)", borderRadius:16, padding:"36px 32px" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:24 }}>
+                <span style={{ fontSize:20 }}>❌</span>
+                <span className="font-syne" style={{ fontSize:16, fontWeight:700, color:"#EF4444" }}>Generic AI Output</span>
+              </div>
+              <p style={{ fontSize:14, color:"rgba(240,244,255,0.38)", lineHeight:1.8, marginBottom:28, fontStyle:"italic" }}>
+                "This is a 2 bedroom, 2 bathroom condominium unit located in BGC, Taguig. The unit is priced at 8,500,000 pesos. It has a nice view and modern amenities. Contact us for more information."
+              </p>
+              <div style={{ display:"flex", alignItems:"center", gap:8, padding:"10px 16px", background:"rgba(239,68,68,0.08)", borderRadius:8, fontSize:13, color:"#EF4444", fontWeight:600 }}>
+                <span>⏱</span> 20 mins of manual editing needed
+              </div>
+            </div>
+            <div className="reveal" style={{ background:"rgba(59,130,246,0.05)", border:"1px solid rgba(59,130,246,0.25)", borderRadius:16, padding:"36px 32px" }}>
+              <div style={{ display:"flex", alignItems:"center", gap:10, marginBottom:24 }}>
+                <span style={{ fontSize:20 }}>✅</span>
+                <span className="font-syne" style={{ fontSize:16, fontWeight:700, color:"#3B82F6" }}>ListifyPH Output</span>
+              </div>
+              <p style={{ fontSize:14, color:"rgba(240,244,255,0.78)", lineHeight:1.8, marginBottom:28, fontStyle:"italic" }}>
+                "Imagine waking up to a panoramic view of the BGC skyline every single morning. This 2BR at The Fort Residences is the life you've been working toward — floor-to-ceiling windows, Italian marble kitchen, and the city glittering at your feet. Priced at ₱8.5M. Move-in ready. Yours to claim."
+              </p>
+              <div style={{ display:"flex", alignItems:"center", gap:8, padding:"10px 16px", background:"rgba(59,130,246,0.10)", borderRadius:8, fontSize:13, color:"#3B82F6", fontWeight:600 }}>
+                <span>⚡</span> Generated in 2.3 seconds
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <hr className="section-divider" />
+
       {/* ── AD STYLES ─────────────────────────────────── */}
       <section style={{ background:"var(--bg-surface)", padding:"110px 24px" }}>
         <div style={{ maxWidth:1160, margin:"0 auto" }}>
@@ -232,6 +311,11 @@ export default function LandingPage() {
               <PricingCard key={plan.name} plan={plan} delay={idx*0.08} />
             ))}
           </div>
+          <div style={{ display:"flex", justifyContent:"center", marginTop:52 }}>
+            <div style={{ display:"inline-flex", alignItems:"center", gap:10, background:"rgba(34,197,94,0.08)", border:"1px solid rgba(34,197,94,0.2)", color:"#22C55E", borderRadius:99, padding:"12px 28px", fontSize:14, fontWeight:600 }}>
+              🛡️ 30-day satisfaction guarantee · Cancel anytime · No questions asked
+            </div>
+          </div>
         </div>
       </section>
 
@@ -251,6 +335,18 @@ export default function LandingPage() {
 
       <hr className="section-divider" />
 
+      {/* ── FAQ ───────────────────────────────────────── */}
+      <section style={{ background:"var(--bg-primary)", padding:"110px 24px" }}>
+        <div style={{ maxWidth:900, margin:"0 auto" }}>
+          <SectionHeader label="FAQ" title="Frequently asked questions" sub="Everything you need to know about ListifyPH." />
+          <div style={{ display:"grid", gridTemplateColumns:"repeat(auto-fit, minmax(380px, 1fr))", gap:16 }}>
+            {faqs.map(({ q, a }) => <FAQItem key={q} q={q} a={a} />)}
+          </div>
+        </div>
+      </section>
+
+      <hr className="section-divider" />
+
       {/* ── CTA ───────────────────────────────────────── */}
       <section style={{ background:"radial-gradient(ellipse 70% 60% at 50% 50%, #0a1628 0%, var(--bg-primary) 100%)", padding:"128px 24px", textAlign:"center", position:"relative", overflow:"hidden" }}>
         <div style={{ position:"absolute", width:560, height:560, borderRadius:"50%", background:"radial-gradient(circle, rgba(59,130,246,0.22) 0%, transparent 70%)", top:"50%", left:"50%", transform:"translate(-50%,-50%)", filter:"blur(40px)", pointerEvents:"none" }} />
@@ -259,13 +355,22 @@ export default function LandingPage() {
             Start writing listings in 30 seconds
           </h2>
           <p style={{ color:"var(--text-secondary)", fontSize:16, marginBottom:44 }}>Try free — no credit card needed</p>
-          <Link href="/signup"
-            style={{ display:"inline-block", background:"#fff", color:"#0F172A", padding:"17px 48px", borderRadius:12, fontWeight:700, fontSize:15, textDecoration:"none", transition:"transform 0.25s, box-shadow 0.25s" }}
-            onMouseEnter={(e) => { const el=e.currentTarget as HTMLElement; el.style.transform="scale(1.04)"; el.style.boxShadow="0 14px 44px rgba(255,255,255,0.18)"; }}
-            onMouseLeave={(e) => { const el=e.currentTarget as HTMLElement; el.style.transform="scale(1)"; el.style.boxShadow="none"; }}
+          <Link href="/signup" className="btn-gradient"
+            style={{ display:"inline-block", padding:"17px 48px", borderRadius:12, fontWeight:700, fontSize:15, textDecoration:"none" }}
           >Get started for free</Link>
         </div>
       </section>
+
+      {/* ── WHATSAPP BUTTON ───────────────────────────── */}
+      <a href="https://wa.me/639666358012?text=Hi%20Joel!%20I%27m%20interested%20in%20ListifyPH"
+        target="_blank" rel="noopener noreferrer"
+        title="Chat with us on WhatsApp"
+        style={{ position:"fixed", bottom:28, left:28, zIndex:100, width:56, height:56, borderRadius:"50%", background:"#25D366", display:"flex", alignItems:"center", justifyContent:"center", animation:"waPulse 2.5s ease-in-out infinite", textDecoration:"none", cursor:"pointer" }}
+      >
+        <svg width="28" height="28" viewBox="0 0 24 24" fill="white" xmlns="http://www.w3.org/2000/svg">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+        </svg>
+      </a>
 
       {/* ── FOOTER ────────────────────────────────────── */}
       <footer className="dot-grid" style={{ background:"#030609", borderTop:"1px solid rgba(148,163,184,0.08)", position:"relative" }}>
@@ -329,7 +434,7 @@ function FeatureCard({ Icon, title, desc, num, delay }: { Icon: any; title: stri
       {/* Gradient top bar */}
       <div className="feat-bar" style={{ position:"absolute", top:0, left:0, right:0, height:3, background:"linear-gradient(90deg,#1D4ED8,#3B82F6)", transform:"scaleX(0)", transformOrigin:"left", transition:"transform 0.45s ease", borderRadius:"14px 14px 0 0" }} />
       {/* Ghost number */}
-      <span className="font-syne" style={{ position:"absolute", top:12, right:18, fontSize:"4rem", fontWeight:800, color:"rgba(255,255,255,0.04)", lineHeight:1, userSelect:"none" }}>{num}</span>
+      <span className="font-syne" style={{ position:"absolute", top:12, right:18, fontSize:"4rem", fontWeight:800, color:"rgba(255,255,255,0.08)", lineHeight:1, userSelect:"none" }}>{num}</span>
       {/* Icon */}
       <div style={{ width:72, height:72, borderRadius:"50%", background:"linear-gradient(135deg,#1D4ED8,#3B82F6)", display:"flex", alignItems:"center", justifyContent:"center", marginBottom:22 }}>
         <Icon size={28} color="white" />
@@ -373,23 +478,24 @@ function AdCard({ name, tag, tagColor, tagBg, desc, delay }: { name: string; tag
 
 /* ── pricing card ─────────────────────────────────────── */
 function PricingCard({ plan, delay }: { plan: typeof plans[0]; delay: number }) {
-  const { name, price, period, num, badge, features: f, cta, highlight } = plan;
+  const { name, price, period, num, badge, badgeGreen, features: f, cta, highlight } = plan;
   return (
     <div className="reveal"
       style={{
         background: highlight ? "linear-gradient(135deg,#0f2460 0%,#0c1a40 100%)" : "var(--bg-card)",
         border: highlight ? "2px solid rgba(59,130,246,0.6)" : "1px solid var(--border)",
         borderRadius:16, padding:"40px 32px",
-        boxShadow: highlight ? undefined : "none",
         animation: highlight ? "borderPulse 3s ease-in-out infinite" : "none",
         position:"relative", transitionDelay:`${delay}s`,
         transform: highlight ? "scale(1.04)" : "scale(1)",
+        transition:"border-color 0.28s ease, box-shadow 0.28s ease",
       }}
+      onMouseEnter={(e) => { if (!highlight) { const el=e.currentTarget as HTMLElement; el.style.borderColor="rgba(59,130,246,0.35)"; el.style.boxShadow="0 16px 48px rgba(59,130,246,0.10)"; }}}
+      onMouseLeave={(e) => { if (!highlight) { const el=e.currentTarget as HTMLElement; el.style.borderColor="var(--border)"; el.style.boxShadow="none"; }}}
     >
-      {/* Ghost number */}
-      <span className="font-syne" style={{ position:"absolute", top:14, right:20, fontSize:"3.5rem", fontWeight:800, color:"rgba(255,255,255,0.04)", lineHeight:1, userSelect:"none" }}>{num}</span>
+      <span className="font-syne" style={{ position:"absolute", top:14, right:20, fontSize:"3.5rem", fontWeight:800, color:"rgba(255,255,255,0.06)", lineHeight:1, userSelect:"none" }}>{num}</span>
       {badge && (
-        <div style={{ display:"inline-block", background:"linear-gradient(135deg,#1D4ED8,#3B82F6)", color:"#fff", fontSize:11, fontWeight:700, padding:"4px 14px", borderRadius:99, marginBottom:18 }}>{badge}</div>
+        <div style={{ display:"inline-block", background: badgeGreen ? "rgba(34,197,94,0.15)" : "linear-gradient(135deg,#1D4ED8,#3B82F6)", color: badgeGreen ? "#22C55E" : "#fff", border: badgeGreen ? "1px solid rgba(34,197,94,0.3)" : "none", fontSize:11, fontWeight:700, padding:"4px 14px", borderRadius:99, marginBottom:18 }}>{badge}</div>
       )}
       <div style={{ fontSize:11, fontWeight:700, color:"var(--text-secondary)", marginBottom:10, letterSpacing:"2px", textTransform:"uppercase" }}>{name}</div>
       <div style={{ display:"flex", alignItems:"baseline", gap:6, marginBottom:8 }}>
@@ -408,6 +514,59 @@ function PricingCard({ plan, delay }: { plan: typeof plans[0]; delay: number }) 
       <Link href="/signup" className={highlight ? "btn-gradient" : ""}
         style={{ display:"block", textAlign:"center", padding:"14px 24px", borderRadius:10, fontWeight:700, fontSize:14, textDecoration:"none", border:highlight ? "none" : "1px solid rgba(148,163,184,0.15)", color:highlight ? "#fff" : "var(--text-primary)", transition:"border-color 0.28s, color 0.28s" }}
       >{cta}</Link>
+    </div>
+  );
+}
+
+/* ── stat card ────────────────────────────────────────── */
+function StatCard({ value, suffix, label }: { value: number; suffix: string; label: string }) {
+  const [count, setCount] = useState(0);
+  const [started, setStarted] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting && !started) {
+        setStarted(true);
+        const steps = 50, stepTime = 1500 / steps, inc = value / steps;
+        let cur = 0;
+        const timer = setInterval(() => {
+          cur = Math.min(cur + inc, value);
+          setCount(Math.floor(cur));
+          if (cur >= value) clearInterval(timer);
+        }, stepTime);
+      }
+    }, { threshold: 0.5 });
+    io.observe(el);
+    return () => io.disconnect();
+  }, [value, started]);
+
+  return (
+    <div ref={ref} style={{ textAlign:"center", padding:"36px 24px", background:"var(--bg-card)", border:"1px solid var(--border)", borderRadius:14, flex:"1 1 200px" }}>
+      <div className="font-syne gradient-text" style={{ fontSize:"2.5rem", fontWeight:800, lineHeight:1.1, marginBottom:10 }}>
+        {count >= 1000 ? count.toLocaleString() : count}{suffix}
+      </div>
+      <div style={{ fontSize:14, color:"var(--text-secondary)", fontWeight:500 }}>{label}</div>
+    </div>
+  );
+}
+
+/* ── faq item ─────────────────────────────────────────── */
+function FAQItem({ q, a }: { q: string; a: string }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div style={{ background:"var(--bg-card)", border:`1px solid ${open ? "rgba(59,130,246,0.4)" : "var(--border)"}`, borderRadius:12, overflow:"hidden", transition:"border-color 0.28s" }}>
+      <button onClick={() => setOpen(!open)}
+        style={{ width:"100%", textAlign:"left", background:"none", border:"none", cursor:"pointer", padding:"20px 24px", display:"flex", alignItems:"center", justifyContent:"space-between", gap:16 }}
+      >
+        <span className="font-syne" style={{ fontSize:15, fontWeight:700, color:"var(--text-primary)", lineHeight:1.4 }}>{q}</span>
+        <span style={{ fontSize:22, color:"var(--accent)", flexShrink:0, transition:"transform 0.28s", transform:open ? "rotate(45deg)" : "rotate(0deg)", display:"inline-block", fontWeight:300, lineHeight:1 }}>+</span>
+      </button>
+      <div style={{ overflow:"hidden", maxHeight:open ? "300px" : "0", transition:"max-height 0.38s ease" }}>
+        <p style={{ padding:"0 24px 20px", fontSize:14, color:"var(--text-secondary)", lineHeight:1.75, margin:0 }}>{a}</p>
+      </div>
     </div>
   );
 }
