@@ -1,0 +1,3 @@
+﻿Place your ListifyPH logo here as logo.png
+Recommended: PNG with transparent background, ~200x60px
+Dark version (navy text on transparent) for white backgrounds
