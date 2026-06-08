@@ -276,7 +276,7 @@ export default function LandingPage() {
             <span style={{ color:"var(--text-secondary)", fontSize:13 }}>— Write less. Sell more.</span>
           </div>
           <div style={{ display:"flex", alignItems:"center", gap:28 }}>
-            {[{href:"/privacy",label:"Privacy Policy"},{href:"/terms",label:"Terms"},{href:"mailto:joelgacho.ffseo@gmail.com",label:"Contact"}].map(({ href, label }) => (
+            {[{href:"/privacy-policy",label:"Privacy Policy"},{href:"/terms",label:"Terms"},{href:"mailto:joelgacho.ffseo@gmail.com",label:"Contact"}].map(({ href, label }) => (
               <a key={label} href={href}
                 style={{ fontSize:13, color:"var(--text-secondary)", textDecoration:"none", transition:"color 0.28s" }}
                 onMouseEnter={(e) => (e.target as HTMLElement).style.color="var(--text-primary)"}
