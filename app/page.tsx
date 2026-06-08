@@ -1,8 +1,10 @@
-﻿import Link from "next/link";
-import Image from "next/image";
+"use client";
+import Link from "next/link";
 import Navbar from "@/components/navbar";
-import { CheckCircle, Zap, FileText, Share2, Camera, Target } from "lucide-react";
+import { useEffect, useRef } from "react";
+import { FileText, Share2, Target, Camera } from "lucide-react";
 
+/* ── data ─────────────────────────────────────────────── */
 const features = [
   {
     icon: FileText,
@@ -30,7 +32,7 @@ const steps = [
   {
     n: "01",
     title: "Fill in property details",
-    desc: "Enter location, price, size, amenities � takes under a minute.",
+    desc: "Enter location, price, size, amenities — takes under a minute.",
   },
   {
     n: "02",
@@ -48,21 +50,29 @@ const adStyles = [
   {
     name: "Storytelling",
     tag: "Luxury",
+    tagColor: "#3B82F6",
+    tagBg: "rgba(59,130,246,0.15)",
     desc: "Paint a picture of the buyer's future life. Open with a scene, build desire, then reveal the property.",
   },
   {
     name: "Direct Response",
-    tag: "Fast Sales",
+    tag: "Fast Sale",
+    tagColor: "#F97316",
+    tagBg: "rgba(249,115,22,0.15)",
     desc: "Lead with the strongest benefit. Bullet points. Urgency. Best for foreclosed properties.",
   },
   {
     name: "FOMO",
     tag: "Pre-Selling",
-    desc: "Emphasize scarcity and exclusivity. \"Only X units left.\" \"Prices going up next month.\"",
+    tagColor: "#A855F7",
+    tagBg: "rgba(168,85,247,0.15)",
+    desc: 'Emphasize scarcity and exclusivity. "Only X units left." "Prices going up next month."',
   },
   {
     name: "Investment Pitch",
     tag: "Investors",
+    tagColor: "#22C55E",
+    tagBg: "rgba(34,197,94,0.15)",
     desc: "Focus on ROI, rental income, capital appreciation, and location value data.",
   },
 ];
@@ -70,7 +80,7 @@ const adStyles = [
 const plans = [
   {
     name: "FREE",
-    price: "?0",
+    price: "₱0",
     period: "/mo",
     features: ["3 generations/month", "Listing description only", "English only"],
     cta: "Get started",
@@ -78,7 +88,7 @@ const plans = [
   },
   {
     name: "PRO",
-    price: "?499",
+    price: "₱499",
     period: "/mo",
     badge: "Most Popular",
     features: [
@@ -93,7 +103,7 @@ const plans = [
   },
   {
     name: "AGENCY",
-    price: "?1,499",
+    price: "₱1,499",
     period: "/mo",
     features: [
       "Everything in Pro",
@@ -112,264 +122,1011 @@ const testimonials = [
     role: "Real Estate Broker, Quezon City",
     body: "I used to spend 2 hours writing one listing. Now I generate 10 listings in the same time. ListifyPH is a game-changer.",
     initials: "MS",
+    grad: "linear-gradient(135deg,#1D4ED8,#3B82F6)",
   },
   {
     name: "Carlo Reyes",
     role: "Property Developer, BGC",
     body: "The Filipino version feature is brilliant. My clients respond so much better to Tagalog copy. Sales conversions are up 40%.",
     initials: "CR",
+    grad: "linear-gradient(135deg,#7C3AED,#A855F7)",
   },
   {
     name: "Ana Dela Cruz",
     role: "Solo Agent, Cebu",
     body: "As a one-person team I needed to scale. ListifyPH lets me look like a full marketing agency. Worth every peso.",
     initials: "AD",
+    grad: "linear-gradient(135deg,#059669,#10B981)",
   },
 ];
 
+/* ── scroll reveal hook ───────────────────────────────── */
+function useReveal() {
+  useEffect(() => {
+    const els = document.querySelectorAll(".reveal");
+    const io = new IntersectionObserver(
+      (entries) => entries.forEach((e) => e.isIntersecting && e.target.classList.add("visible")),
+      { threshold: 0.12 }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, []);
+}
+
+/* ── typing demo hook ─────────────────────────────────── */
+function useTyping(ref: React.RefObject<HTMLParagraphElement | null>) {
+  useEffect(() => {
+    const text =
+      "Imagine waking up to a panoramic view of the BGC skyline. This stunning 2BR condo at The Fort is the life you have been working toward. Every detail — from the floor-to-ceiling windows to the designer kitchen — speaks of quiet luxury.";
+    let i = 0;
+    const el = ref.current;
+    if (!el) return;
+    el.textContent = "";
+    const timer = setInterval(() => {
+      if (i < text.length) {
+        el.textContent += text[i];
+        i++;
+      } else {
+        clearInterval(timer);
+      }
+    }, 28);
+    return () => clearInterval(timer);
+  }, [ref]);
+}
+
+/* ── page ─────────────────────────────────────────────── */
 export default function LandingPage() {
+  useReveal();
+  const typingRef = useRef<HTMLParagraphElement>(null);
+  useTyping(typingRef);
+
   return (
-    <div className="min-h-screen bg-white">
+    <div style={{ minHeight: "100vh", background: "var(--bg-primary)", overflowX: "hidden" }}>
       <Navbar />
 
-      {/* Hero */}
-      <section className="pt-24 pb-20 px-4 sm:px-6 lg:px-8 bg-surface">
-        <div className="max-w-4xl mx-auto text-center">
-          <div className="inline-flex items-center gap-2 bg-accent-blue/10 text-accent-blue px-4 py-1.5 rounded-full text-sm font-medium mb-6">
-            <Zap size={14} />
+      {/* ── HERO ────────────────────────────────────────── */}
+      <section
+        style={{
+          position: "relative",
+          paddingTop: 160,
+          paddingBottom: 120,
+          textAlign: "center",
+          overflow: "hidden",
+        }}
+      >
+        {/* Grid overlay */}
+        <div
+          className="grid-overlay"
+          style={{ position: "absolute", inset: 0, pointerEvents: "none" }}
+        />
+        {/* Radial glow */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "radial-gradient(ellipse 62% 52% at 50% 40%, rgba(59,130,246,0.12) 0%, transparent 62%)",
+            pointerEvents: "none",
+          }}
+        />
+        {/* Orbs */}
+        {[
+          { w: 340, h: 340, top: "8%", left: "6%", anim: "float 10s ease-in-out infinite", delay: "0s" },
+          { w: 260, h: 260, top: "20%", right: "5%", anim: "float2 12s ease-in-out infinite", delay: "1.5s" },
+          { w: 180, h: 180, bottom: "15%", left: "18%", anim: "float 14s ease-in-out infinite", delay: "3s" },
+          { w: 220, h: 220, bottom: "10%", right: "14%", anim: "float2 11s ease-in-out infinite", delay: "0.8s" },
+          { w: 140, h: 140, top: "50%", left: "50%", anim: "float3 9s ease-in-out infinite", delay: "2s" },
+        ].map((o, i) => (
+          <div
+            key={i}
+            style={{
+              position: "absolute",
+              width: o.w,
+              height: o.h,
+              top: (o as any).top,
+              bottom: (o as any).bottom,
+              left: (o as any).left,
+              right: (o as any).right,
+              borderRadius: "50%",
+              background: "radial-gradient(circle, rgba(59,130,246,0.18) 0%, transparent 70%)",
+              filter: "blur(9px)",
+              animation: o.anim,
+              animationDelay: o.delay,
+              pointerEvents: "none",
+            }}
+          />
+        ))}
+
+        <div style={{ position: "relative", maxWidth: 800, margin: "0 auto", padding: "0 24px" }}>
+          {/* Badge */}
+          <div
+            style={{
+              display: "inline-flex",
+              alignItems: "center",
+              gap: 8,
+              background: "rgba(59,130,246,0.10)",
+              border: "1px solid rgba(59,130,246,0.3)",
+              color: "#3B82F6",
+              borderRadius: 99,
+              padding: "6px 16px",
+              fontSize: 12,
+              fontWeight: 600,
+              marginBottom: 28,
+            }}
+          >
+            <span style={{ fontSize: 14 }}>⚡</span>
             Powered by Claude AI
           </div>
-          <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-navy leading-tight mb-6">
+
+          {/* H1 */}
+          <h1
+            className="font-syne"
+            style={{
+              fontSize: "clamp(2.4rem, 5.5vw, 4.2rem)",
+              fontWeight: 800,
+              lineHeight: 1.1,
+              color: "var(--text-primary)",
+              marginBottom: 24,
+              letterSpacing: "-0.03em",
+            }}
+          >
             Property listings in{" "}
-            <span className="text-accent-blue">30 seconds.</span>
+            <span className="gradient-text">30 seconds.</span>
             <br />
             Not 3 hours.
           </h1>
-          <p className="text-lg text-text-secondary max-w-2xl mx-auto mb-10">
-            ListifyPH generates professional listing descriptions, Facebook posts, Facebook Ad
-            copy, and Instagram captions � instantly.
+
+          <p
+            style={{
+              fontSize: "1.1rem",
+              color: "var(--text-secondary)",
+              maxWidth: 520,
+              margin: "0 auto 40px",
+              lineHeight: 1.7,
+            }}
+          >
+            ListifyPH generates professional listing descriptions, Facebook posts, ad copy,
+            and Instagram captions — instantly.
           </p>
-          <div className="flex flex-col sm:flex-row gap-4 justify-center">
+
+          {/* Buttons */}
+          <div style={{ display: "flex", gap: 16, justifyContent: "center", flexWrap: "wrap", marginBottom: 28 }}>
             <Link
               href="/signup"
-              className="bg-navy text-white px-8 py-3.5 rounded-xl font-semibold text-base hover:bg-navy/90 transition-colors"
+              className="btn-gradient"
+              style={{
+                padding: "14px 32px",
+                borderRadius: 12,
+                fontWeight: 700,
+                fontSize: 15,
+                textDecoration: "none",
+              }}
             >
               Try for free
             </Link>
             <a
               href="#how-it-works"
-              className="border border-brand-border text-navy px-8 py-3.5 rounded-xl font-semibold text-base hover:bg-surface transition-colors"
+              style={{
+                padding: "14px 32px",
+                borderRadius: 12,
+                fontWeight: 600,
+                fontSize: 15,
+                color: "var(--text-primary)",
+                background: "transparent",
+                border: "1px solid rgba(148,163,184,0.15)",
+                textDecoration: "none",
+                transition: "border-color 0.25s, color 0.25s",
+              }}
+              onMouseEnter={(e) => {
+                (e.currentTarget as HTMLElement).style.borderColor = "var(--accent)";
+                (e.currentTarget as HTMLElement).style.color = "var(--accent)";
+              }}
+              onMouseLeave={(e) => {
+                (e.currentTarget as HTMLElement).style.borderColor = "rgba(148,163,184,0.15)";
+                (e.currentTarget as HTMLElement).style.color = "var(--text-primary)";
+              }}
             >
               See how it works
             </a>
           </div>
 
-          {/* Demo mockup */}
-          <div className="mt-16 bg-white rounded-2xl shadow-xl border border-brand-border p-6 text-left max-w-2xl mx-auto">
-            <div className="flex items-center gap-2 mb-4">
-              <div className="w-3 h-3 rounded-full bg-red-400" />
-              <div className="w-3 h-3 rounded-full bg-yellow-400" />
-              <div className="w-3 h-3 rounded-full bg-green-400" />
+          {/* Stats bar */}
+          <p style={{ fontSize: 13, color: "var(--text-secondary)" }}>
+            50+ agents saving time
+            <span style={{ margin: "0 10px", opacity: 0.4 }}>·</span>
+            No credit card
+            <span style={{ margin: "0 10px", opacity: 0.4 }}>·</span>
+            Free to start
+          </p>
+
+          {/* Demo card */}
+          <div
+            className="reveal"
+            style={{
+              marginTop: 64,
+              background: "var(--bg-card)",
+              border: "1px solid rgba(255,255,255,0.10)",
+              borderRadius: 16,
+              boxShadow: "0 20px 60px rgba(0,0,0,0.6), inset 0 1px 0 rgba(255,255,255,0.05)",
+              padding: "28px 32px",
+              textAlign: "left",
+              maxWidth: 620,
+              margin: "64px auto 0",
+            }}
+          >
+            {/* Traffic lights */}
+            <div style={{ display: "flex", gap: 8, marginBottom: 20 }}>
+              {["#FF5F57","#FEBC2E","#28C840"].map((c) => (
+                <div key={c} style={{ width: 12, height: 12, borderRadius: "50%", background: c }} />
+              ))}
             </div>
-            <div className="space-y-3">
-              <div className="flex gap-3">
-                <span className="text-text-secondary text-sm w-32 shrink-0">Property:</span>
-                <span className="text-navy text-sm font-medium">2BR Condo, BGC Taguig</span>
-              </div>
-              <div className="flex gap-3">
-                <span className="text-text-secondary text-sm w-32 shrink-0">Price:</span>
-                <span className="text-navy text-sm font-medium">?8,500,000</span>
-              </div>
-              <div className="flex gap-3">
-                <span className="text-text-secondary text-sm w-32 shrink-0">Style:</span>
-                <span className="text-navy text-sm font-medium">Storytelling</span>
-              </div>
-              <div className="border-t border-brand-border pt-3 mt-3">
-                <div className="inline-flex items-center gap-2 text-accent-blue text-sm font-medium mb-2">
-                  <Zap size={14} />
-                  Generated in 2.3s
+
+            <div style={{ display: "flex", flexDirection: "column", gap: 12 }}>
+              {[
+                { label: "Property", value: "2BR Condo, BGC Taguig" },
+                { label: "Price", value: "₱8,500,000" },
+                { label: "Style", value: "Storytelling" },
+              ].map(({ label, value }) => (
+                <div key={label} style={{ display: "flex", gap: 16 }}>
+                  <span style={{ fontSize: 13, color: "var(--text-secondary)", width: 80, flexShrink: 0 }}>{label}:</span>
+                  <span style={{ fontSize: 13, color: "var(--text-primary)", fontWeight: 500 }}>{value}</span>
                 </div>
-                <p className="text-navy text-sm leading-relaxed">Imagine waking up to a panoramic view of the BGC skyline. This stunning 2BR condo at The Fort is the life you have been working toward.</p>
+              ))}
+
+              <div
+                style={{
+                  borderTop: "1px solid rgba(148,163,184,0.1)",
+                  paddingTop: 16,
+                  marginTop: 4,
+                }}
+              >
+                <div
+                  style={{
+                    display: "inline-flex",
+                    alignItems: "center",
+                    gap: 6,
+                    color: "var(--accent)",
+                    fontSize: 12,
+                    fontWeight: 700,
+                    marginBottom: 10,
+                    background: "rgba(59,130,246,0.12)",
+                    padding: "4px 12px",
+                    borderRadius: 99,
+                  }}
+                >
+                  ⚡ Generated in 2.3s
+                </div>
+                <p
+                  ref={typingRef}
+                  style={{
+                    fontSize: 13,
+                    color: "var(--text-secondary)",
+                    lineHeight: 1.7,
+                    minHeight: 60,
+                  }}
+                />
               </div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* Features */}
-      <section id="features" className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-navy mb-4">One input. Four types of content.</h2>
-            <p className="text-text-secondary max-w-xl mx-auto">
+      {/* ── FEATURES ────────────────────────────────────── */}
+      <section
+        id="features"
+        style={{ background: "var(--bg-surface)", padding: "100px 24px", position: "relative" }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background: "radial-gradient(ellipse 50% 40% at 80% 50%, rgba(59,130,246,0.06) 0%, transparent 60%)",
+            pointerEvents: "none",
+          }}
+        />
+        <div style={{ maxWidth: 1160, margin: "0 auto", position: "relative" }}>
+          <div className="reveal" style={{ textAlign: "center", marginBottom: 64 }}>
+            <p
+              style={{
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                letterSpacing: "4px",
+                textTransform: "uppercase",
+                color: "var(--accent)",
+                textShadow: "0 0 18px rgba(59,130,246,0.5)",
+                marginBottom: 16,
+              }}
+            >
+              What you get
+            </p>
+            <h2
+              className="font-syne"
+              style={{
+                fontSize: "clamp(1.75rem, 3.8vw, 2.5rem)",
+                fontWeight: 700,
+                color: "var(--text-primary)",
+                marginBottom: 16,
+                letterSpacing: "-0.02em",
+              }}
+            >
+              One input. Four types of content.
+            </h2>
+            <p style={{ color: "var(--text-secondary)", maxWidth: 480, margin: "0 auto" }}>
               Stop writing the same property from scratch for every platform. ListifyPH does it all at once.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {features.map(({ icon: Icon, title, desc }) => (
-              <div key={title} className="bg-surface rounded-2xl p-6 border border-brand-border hover:shadow-md transition-shadow">
-                <div className="w-10 h-10 bg-accent-blue/10 rounded-xl flex items-center justify-center mb-4">
-                  <Icon size={20} className="text-accent-blue" />
-                </div>
-                <h3 className="font-semibold text-navy mb-2">{title}</h3>
-                <p className="text-text-secondary text-sm">{desc}</p>
-              </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+              gap: 24,
+            }}
+          >
+            {features.map(({ icon: Icon, title, desc }, idx) => (
+              <FeatureCard key={title} Icon={Icon} title={title} desc={desc} delay={idx * 0.1} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* How it works */}
-      <section id="how-it-works" className="py-20 px-4 sm:px-6 lg:px-8 bg-navy">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-white mb-4">From property to post in 3 steps</h2>
-            <p className="text-white/60 max-w-xl mx-auto">No training. No templates. Just fill, choose, and copy.</p>
+      {/* ── HOW IT WORKS ────────────────────────────────── */}
+      <section
+        id="how-it-works"
+        style={{ background: "var(--bg-primary)", padding: "100px 24px" }}
+      >
+        <div style={{ maxWidth: 1000, margin: "0 auto" }}>
+          <div className="reveal" style={{ textAlign: "center", marginBottom: 64 }}>
+            <p
+              style={{
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                letterSpacing: "4px",
+                textTransform: "uppercase",
+                color: "var(--accent)",
+                textShadow: "0 0 18px rgba(59,130,246,0.5)",
+                marginBottom: 16,
+              }}
+            >
+              Process
+            </p>
+            <h2
+              className="font-syne"
+              style={{
+                fontSize: "clamp(1.75rem, 3.8vw, 2.5rem)",
+                fontWeight: 700,
+                color: "var(--text-primary)",
+                letterSpacing: "-0.02em",
+                marginBottom: 14,
+              }}
+            >
+              From property to post in 3 steps
+            </h2>
+            <p style={{ color: "var(--text-secondary)" }}>
+              No training. No templates. Just fill, choose, and copy.
+            </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {steps.map(({ n, title, desc }) => (
-              <div key={n} className="text-center">
-                <div className="w-12 h-12 bg-accent-blue rounded-2xl flex items-center justify-center mx-auto mb-4">
-                  <span className="text-white font-bold text-sm">{n}</span>
-                </div>
-                <h3 className="font-semibold text-white mb-2">{title}</h3>
-                <p className="text-white/60 text-sm">{desc}</p>
-              </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(260px, 1fr))",
+              gap: 24,
+              position: "relative",
+            }}
+          >
+            {steps.map(({ n, title, desc }, idx) => (
+              <StepCard key={n} n={n} title={title} desc={desc} delay={idx * 0.15} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Ad styles */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-navy mb-4">Match the style to the property</h2>
-            <p className="text-text-secondary max-w-xl mx-auto">
+      {/* ── AD STYLES ───────────────────────────────────── */}
+      <section style={{ background: "var(--bg-surface)", padding: "100px 24px" }}>
+        <div style={{ maxWidth: 1160, margin: "0 auto" }}>
+          <div className="reveal" style={{ textAlign: "center", marginBottom: 64 }}>
+            <p
+              style={{
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                letterSpacing: "4px",
+                textTransform: "uppercase",
+                color: "var(--accent)",
+                textShadow: "0 0 18px rgba(59,130,246,0.5)",
+                marginBottom: 16,
+              }}
+            >
+              Ad Styles
+            </p>
+            <h2
+              className="font-syne"
+              style={{
+                fontSize: "clamp(1.75rem, 3.8vw, 2.5rem)",
+                fontWeight: 700,
+                color: "var(--text-primary)",
+                letterSpacing: "-0.02em",
+                marginBottom: 14,
+              }}
+            >
+              Match the style to the property
+            </h2>
+            <p style={{ color: "var(--text-secondary)", maxWidth: 480, margin: "0 auto" }}>
               Four proven ad frameworks, each designed for a different type of buyer and listing.
             </p>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {adStyles.map(({ name, tag, desc }) => (
-              <div key={name} className="border border-brand-border rounded-2xl p-6 hover:border-accent-blue hover:shadow-md transition-all">
-                <div className="flex items-start justify-between mb-3">
-                  <h3 className="font-semibold text-navy">{name}</h3>
-                  <span className="text-xs font-medium text-accent-blue bg-accent-blue/10 px-2 py-0.5 rounded-full">{tag}</span>
-                </div>
-                <p className="text-text-secondary text-sm">{desc}</p>
-              </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(240px, 1fr))",
+              gap: 24,
+            }}
+          >
+            {adStyles.map(({ name, tag, tagColor, tagBg, desc }, idx) => (
+              <AdCard key={name} name={name} tag={tag} tagColor={tagColor} tagBg={tagBg} desc={desc} delay={idx * 0.1} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Pricing */}
-      <section id="pricing" className="py-20 px-4 sm:px-6 lg:px-8 bg-surface">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-navy mb-4">Simple, transparent pricing</h2>
-            <p className="text-text-secondary">Start free. Upgrade when you are ready to scale.</p>
+      {/* ── PRICING ─────────────────────────────────────── */}
+      <section
+        id="pricing"
+        style={{ background: "var(--bg-primary)", padding: "100px 24px", position: "relative" }}
+      >
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "radial-gradient(ellipse 60% 50% at 50% 60%, rgba(59,130,246,0.08) 0%, transparent 65%)",
+            pointerEvents: "none",
+          }}
+        />
+        <div style={{ maxWidth: 1060, margin: "0 auto", position: "relative" }}>
+          <div className="reveal" style={{ textAlign: "center", marginBottom: 64 }}>
+            <p
+              style={{
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                letterSpacing: "4px",
+                textTransform: "uppercase",
+                color: "var(--accent)",
+                textShadow: "0 0 18px rgba(59,130,246,0.5)",
+                marginBottom: 16,
+              }}
+            >
+              Pricing
+            </p>
+            <h2
+              className="font-syne"
+              style={{
+                fontSize: "clamp(1.75rem, 3.8vw, 2.5rem)",
+                fontWeight: 700,
+                color: "var(--text-primary)",
+                letterSpacing: "-0.02em",
+                marginBottom: 14,
+              }}
+            >
+              Simple, transparent pricing
+            </h2>
+            <p style={{ color: "var(--text-secondary)" }}>
+              Start free. Upgrade when you are ready to scale.
+            </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {plans.map(({ name, price, period, badge, features: f, cta, highlight }) => (
-              <div
-                key={name}
-                className={`rounded-2xl p-8 border ${
-                  highlight
-                    ? "bg-navy border-navy text-white shadow-2xl scale-105"
-                    : "bg-white border-brand-border"
-                }`}
-              >
-                {badge && (
-                  <div className="inline-block bg-accent-blue text-white text-xs font-medium px-3 py-1 rounded-full mb-4">
-                    {badge}
-                  </div>
-                )}
-                <div className={`text-sm font-medium mb-1 ${highlight ? "text-white/60" : "text-text-secondary"}`}>{name}</div>
-                <div className="flex items-baseline gap-1 mb-6">
-                  <span className={`text-4xl font-bold ${highlight ? "text-white" : "text-navy"}`}>{price}</span>
-                  <span className={`text-sm ${highlight ? "text-white/60" : "text-text-secondary"}`}>{period}</span>
-                </div>
-                <ul className="space-y-3 mb-8">
-                  {f.map((feat) => (
-                    <li key={feat} className="flex items-center gap-2 text-sm">
-                      <CheckCircle size={16} className={highlight ? "text-success-green" : "text-success-green"} />
-                      <span className={highlight ? "text-white/80" : "text-text-secondary"}>{feat}</span>
-                    </li>
-                  ))}
-                </ul>
-                <Link
-                  href="/signup"
-                  className={`block text-center py-3 rounded-xl font-semibold text-sm transition-colors ${
-                    highlight
-                      ? "bg-accent-blue text-white hover:bg-accent-blue/90"
-                      : "border border-brand-border text-navy hover:bg-surface"
-                  }`}
-                >
-                  {cta}
-                </Link>
-              </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
+              gap: 24,
+              alignItems: "start",
+            }}
+          >
+            {plans.map((plan, idx) => (
+              <PricingCard key={plan.name} plan={plan} delay={idx * 0.1} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-5xl mx-auto">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl font-bold text-navy mb-4">Trusted by agents across the Philippines</h2>
+      {/* ── TESTIMONIALS ────────────────────────────────── */}
+      <section style={{ background: "var(--bg-surface)", padding: "100px 24px" }}>
+        <div style={{ maxWidth: 1060, margin: "0 auto" }}>
+          <div className="reveal" style={{ textAlign: "center", marginBottom: 64 }}>
+            <p
+              style={{
+                fontSize: "0.72rem",
+                fontWeight: 700,
+                letterSpacing: "4px",
+                textTransform: "uppercase",
+                color: "var(--accent)",
+                textShadow: "0 0 18px rgba(59,130,246,0.5)",
+                marginBottom: 16,
+              }}
+            >
+              Testimonials
+            </p>
+            <h2
+              className="font-syne"
+              style={{
+                fontSize: "clamp(1.75rem, 3.8vw, 2.5rem)",
+                fontWeight: 700,
+                color: "var(--text-primary)",
+                letterSpacing: "-0.02em",
+              }}
+            >
+              Trusted by agents across the Philippines
+            </h2>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-            {testimonials.map(({ name, role, body, initials }) => (
-              <div key={name} className="bg-surface rounded-2xl p-6 border border-brand-border">
-                <p className="text-navy text-sm leading-relaxed mb-6">{`"${body}"`}</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 bg-navy rounded-full flex items-center justify-center">
-                    <span className="text-white text-xs font-bold">{initials}</span>
-                  </div>
-                  <div>
-                    <div className="font-semibold text-navy text-sm">{name}</div>
-                    <div className="text-text-secondary text-xs">{role}</div>
-                  </div>
-                </div>
-              </div>
+
+          <div
+            style={{
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fit, minmax(290px, 1fr))",
+              gap: 24,
+            }}
+          >
+            {testimonials.map(({ name, role, body, initials, grad }, idx) => (
+              <TestimonialCard key={name} name={name} role={role} body={body} initials={initials} grad={grad} delay={idx * 0.1} />
             ))}
           </div>
         </div>
       </section>
 
-      {/* Final CTA */}
-      <section className="py-20 px-4 sm:px-6 lg:px-8 bg-navy text-white">
-        <div className="max-w-2xl mx-auto text-center">
-          <h2 className="text-3xl font-bold mb-4">Start writing listings in 30 seconds</h2>
-          <p className="text-white/60 mb-8">Try free � no credit card needed</p>
+      {/* ── CTA ─────────────────────────────────────────── */}
+      <section
+        style={{
+          background: "radial-gradient(ellipse 70% 60% at 50% 50%, #0a1628 0%, var(--bg-primary) 100%)",
+          padding: "120px 24px",
+          textAlign: "center",
+          position: "relative",
+          overflow: "hidden",
+        }}
+      >
+        {/* Large glow orb */}
+        <div
+          style={{
+            position: "absolute",
+            width: 500,
+            height: 500,
+            borderRadius: "50%",
+            background: "radial-gradient(circle, rgba(59,130,246,0.22) 0%, transparent 70%)",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%,-50%)",
+            filter: "blur(32px)",
+            pointerEvents: "none",
+          }}
+        />
+        <div className="reveal" style={{ position: "relative", maxWidth: 640, margin: "0 auto" }}>
+          <h2
+            className="font-syne"
+            style={{
+              fontSize: "clamp(2rem, 4.5vw, 3.2rem)",
+              fontWeight: 800,
+              color: "#fff",
+              letterSpacing: "-0.03em",
+              marginBottom: 18,
+            }}
+          >
+            Start writing listings in 30 seconds
+          </h2>
+          <p style={{ color: "var(--text-secondary)", fontSize: 16, marginBottom: 40 }}>
+            Try free — no credit card needed
+          </p>
           <Link
             href="/signup"
-            className="inline-block bg-accent-blue text-white px-10 py-4 rounded-xl font-semibold text-base hover:bg-accent-blue/90 transition-colors"
+            style={{
+              display: "inline-block",
+              background: "#fff",
+              color: "#0F172A",
+              padding: "16px 44px",
+              borderRadius: 12,
+              fontWeight: 700,
+              fontSize: 15,
+              textDecoration: "none",
+              transition: "transform 0.25s, box-shadow 0.25s",
+            }}
+            onMouseEnter={(e) => {
+              (e.currentTarget as HTMLElement).style.transform = "scale(1.04)";
+              (e.currentTarget as HTMLElement).style.boxShadow = "0 12px 40px rgba(255,255,255,0.18)";
+            }}
+            onMouseLeave={(e) => {
+              (e.currentTarget as HTMLElement).style.transform = "scale(1)";
+              (e.currentTarget as HTMLElement).style.boxShadow = "none";
+            }}
           >
             Get started for free
           </Link>
         </div>
       </section>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-brand-border py-12 px-4 sm:px-6 lg:px-8">
-        <div className="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-4">
-                    <div className="flex items-center gap-3">
-            <Image src="/assets/logo-dark.png" alt="ListifyPH" width={140} height={36} className="h-8 w-auto" />
-            <span className="text-text-secondary text-sm">&#8212; Write less. Sell more.</span>
+      {/* ── FOOTER ──────────────────────────────────────── */}
+      <footer
+        className="dot-grid"
+        style={{
+          background: "#030609",
+          borderTop: "1px solid rgba(148,163,184,0.08)",
+          position: "relative",
+        }}
+      >
+        {/* Gradient top bar */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            right: 0,
+            height: 3,
+            background: "linear-gradient(90deg, #1D4ED8, #3B82F6)",
+          }}
+        />
+        <div
+          style={{
+            maxWidth: 1160,
+            margin: "0 auto",
+            padding: "48px 24px",
+            display: "flex",
+            flexWrap: "wrap",
+            alignItems: "center",
+            justifyContent: "space-between",
+            gap: 24,
+          }}
+        >
+          <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+            <img src="/logo.svg" alt="ListifyPH" style={{ height: 32, width: "auto" }} />
+            <span style={{ color: "var(--text-secondary)", fontSize: 13 }}>— Write less. Sell more.</span>
           </div>
-          <div className="flex items-center gap-6 text-sm text-text-secondary">
-            <Link href="/privacy" className="hover:text-navy transition-colors">Privacy Policy</Link>
-            <Link href="/terms" className="hover:text-navy transition-colors">Terms</Link>
-            <a href="mailto:joelgacho.ffseo@gmail.com" className="hover:text-navy transition-colors">Contact</a>
+
+          <div style={{ display: "flex", alignItems: "center", gap: 28 }}>
+            {[
+              { href: "/privacy", label: "Privacy Policy" },
+              { href: "/terms", label: "Terms" },
+              { href: "mailto:joelgacho.ffseo@gmail.com", label: "Contact" },
+            ].map(({ href, label }) => (
+              <a
+                key={label}
+                href={href}
+                style={{
+                  fontSize: 13,
+                  color: "var(--text-secondary)",
+                  textDecoration: "none",
+                  transition: "color 0.2s",
+                }}
+                onMouseEnter={(e) => ((e.target as HTMLElement).style.color = "var(--text-primary)")}
+                onMouseLeave={(e) => ((e.target as HTMLElement).style.color = "var(--text-secondary)")}
+              >
+                {label}
+              </a>
+            ))}
           </div>
-          <div className="text-text-secondary text-sm">� 2026 ListifyPH</div>
+
+          <div style={{ fontSize: 13, color: "var(--text-secondary)" }}>© 2026 ListifyPH</div>
         </div>
       </footer>
     </div>
   );
 }
 
+/* ── sub-components ───────────────────────────────────── */
 
+function FeatureCard({ Icon, title, desc, delay }: { Icon: any; title: string; desc: string; delay: number }) {
+  return (
+    <div
+      className="reveal"
+      style={{
+        background: "var(--bg-card)",
+        border: "1px solid var(--border)",
+        borderRadius: 14,
+        padding: "40px 36px",
+        transition: "transform 0.35s ease, border-color 0.35s ease, box-shadow 0.35s ease",
+        transitionDelay: `${delay}s`,
+        cursor: "default",
+        position: "relative",
+        overflow: "hidden",
+      }}
+      onMouseEnter={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.transform = "translateY(-10px)";
+        el.style.borderColor = "var(--accent)";
+        el.style.boxShadow = "0 28px 64px rgba(59,130,246,0.14)";
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.transform = "translateY(0)";
+        el.style.borderColor = "var(--border)";
+        el.style.boxShadow = "none";
+      }}
+    >
+      <div
+        style={{
+          width: 56,
+          height: 56,
+          borderRadius: "50%",
+          background: "linear-gradient(135deg, #1D4ED8, #3B82F6)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          marginBottom: 20,
+        }}
+      >
+        <Icon size={24} color="white" />
+      </div>
+      <h3
+        className="font-syne"
+        style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: 10 }}
+      >
+        {title}
+      </h3>
+      <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.65 }}>{desc}</p>
+    </div>
+  );
+}
+
+function StepCard({ n, title, desc, delay }: { n: string; title: string; desc: string; delay: number }) {
+  return (
+    <div
+      className="reveal"
+      style={{
+        background: "var(--bg-card)",
+        border: "1px solid var(--border)",
+        borderRadius: 14,
+        padding: 32,
+        position: "relative",
+        overflow: "hidden",
+        transitionDelay: `${delay}s`,
+      }}
+    >
+      {/* Ghost number */}
+      <span
+        className="font-syne"
+        style={{
+          position: "absolute",
+          top: 12,
+          right: 18,
+          fontSize: "4.5rem",
+          fontWeight: 800,
+          color: "rgba(255,255,255,0.04)",
+          lineHeight: 1,
+          userSelect: "none",
+        }}
+      >
+        {n}
+      </span>
+      <span
+        className="font-syne gradient-text"
+        style={{ fontSize: "3.5rem", fontWeight: 800, display: "block", marginBottom: 16 }}
+      >
+        {n}
+      </span>
+      <h3
+        className="font-syne"
+        style={{ fontSize: "1.1rem", fontWeight: 700, color: "var(--text-primary)", marginBottom: 10 }}
+      >
+        {title}
+      </h3>
+      <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.65 }}>{desc}</p>
+    </div>
+  );
+}
+
+function AdCard({ name, tag, tagColor, tagBg, desc, delay }: {
+  name: string; tag: string; tagColor: string; tagBg: string; desc: string; delay: number;
+}) {
+  return (
+    <div
+      className="reveal"
+      style={{
+        background: "var(--bg-card)",
+        border: "1px solid var(--border)",
+        borderRadius: 14,
+        padding: "28px 28px 32px",
+        transition: "transform 0.35s ease, border-color 0.35s ease",
+        transitionDelay: `${delay}s`,
+        cursor: "default",
+      }}
+      onMouseEnter={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.transform = "translateY(-8px)";
+        el.style.borderColor = "var(--accent)";
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.transform = "translateY(0)";
+        el.style.borderColor = "var(--border)";
+      }}
+    >
+      <div style={{ display: "flex", alignItems: "flex-start", justifyContent: "space-between", marginBottom: 14 }}>
+        <h3 className="font-syne" style={{ fontSize: "1rem", fontWeight: 700, color: "var(--text-primary)" }}>
+          {name}
+        </h3>
+        <span
+          style={{
+            fontSize: 11,
+            fontWeight: 700,
+            color: tagColor,
+            background: tagBg,
+            padding: "3px 10px",
+            borderRadius: 99,
+          }}
+        >
+          {tag}
+        </span>
+      </div>
+      <p style={{ fontSize: 13, color: "var(--text-secondary)", lineHeight: 1.65 }}>{desc}</p>
+    </div>
+  );
+}
+
+function PricingCard({ plan, delay }: { plan: typeof plans[0]; delay: number }) {
+  const { name, price, period, badge, features: f, cta, highlight } = plan;
+  return (
+    <div
+      className="reveal"
+      style={{
+        background: highlight
+          ? "linear-gradient(135deg, #0f2460 0%, #0c1a40 100%)"
+          : "var(--bg-card)",
+        border: highlight
+          ? "2px solid rgba(59,130,246,0.6)"
+          : "1px solid var(--border)",
+        borderRadius: 16,
+        padding: "40px 36px",
+        boxShadow: highlight ? "0 0 60px rgba(59,130,246,0.2)" : "none",
+        position: "relative",
+        transitionDelay: `${delay}s`,
+        transform: highlight ? "scale(1.04)" : "scale(1)",
+      }}
+    >
+      {badge && (
+        <div
+          style={{
+            display: "inline-block",
+            background: "linear-gradient(135deg, #1D4ED8, #3B82F6)",
+            color: "#fff",
+            fontSize: 11,
+            fontWeight: 700,
+            padding: "4px 14px",
+            borderRadius: 99,
+            marginBottom: 18,
+          }}
+        >
+          {badge}
+        </div>
+      )}
+      <div style={{ fontSize: 12, fontWeight: 700, color: "var(--text-secondary)", marginBottom: 8, letterSpacing: "2px" }}>
+        {name}
+      </div>
+      <div style={{ display: "flex", alignItems: "baseline", gap: 4, marginBottom: 28 }}>
+        <span
+          className={highlight ? "font-syne gradient-text" : "font-syne"}
+          style={{ fontSize: "3rem", fontWeight: 800, color: highlight ? undefined : "var(--text-primary)" }}
+        >
+          {price}
+        </span>
+        <span style={{ fontSize: 13, color: "var(--text-secondary)" }}>{period}</span>
+      </div>
+      <ul style={{ listStyle: "none", padding: 0, margin: "0 0 32px", display: "flex", flexDirection: "column", gap: 12 }}>
+        {f.map((feat) => (
+          <li key={feat} style={{ display: "flex", alignItems: "center", gap: 10, fontSize: 14 }}>
+            <span
+              style={{
+                width: 18,
+                height: 18,
+                borderRadius: "50%",
+                background: "rgba(34,197,94,0.18)",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+                flexShrink: 0,
+                fontSize: 10,
+                color: "#22C55E",
+              }}
+            >
+              ✓
+            </span>
+            <span style={{ color: "var(--text-secondary)" }}>{feat}</span>
+          </li>
+        ))}
+      </ul>
+      <Link
+        href="/signup"
+        className={highlight ? "btn-gradient" : ""}
+        style={{
+          display: "block",
+          textAlign: "center",
+          padding: "13px 24px",
+          borderRadius: 10,
+          fontWeight: 700,
+          fontSize: 14,
+          textDecoration: "none",
+          border: highlight ? "none" : "1px solid rgba(148,163,184,0.15)",
+          color: highlight ? "#fff" : "var(--text-primary)",
+          transition: "border-color 0.25s, color 0.25s",
+        }}
+      >
+        {cta}
+      </Link>
+    </div>
+  );
+}
+
+function TestimonialCard({ name, role, body, initials, grad, delay }: {
+  name: string; role: string; body: string; initials: string; grad: string; delay: number;
+}) {
+  return (
+    <div
+      className="reveal"
+      style={{
+        background: "var(--bg-card)",
+        border: "1px solid var(--border)",
+        borderRadius: 14,
+        padding: 32,
+        position: "relative",
+        transition: "transform 0.35s ease, border-color 0.35s ease",
+        transitionDelay: `${delay}s`,
+        cursor: "default",
+      }}
+      onMouseEnter={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.transform = "translateY(-4px)";
+        el.style.borderColor = "var(--accent)";
+      }}
+      onMouseLeave={(e) => {
+        const el = e.currentTarget as HTMLElement;
+        el.style.transform = "translateY(0)";
+        el.style.borderColor = "var(--border)";
+      }}
+    >
+      {/* Quote mark */}
+      <div
+        className="font-syne"
+        style={{
+          fontSize: "4rem",
+          lineHeight: 1,
+          color: "var(--accent)",
+          opacity: 0.18,
+          position: "absolute",
+          top: 16,
+          left: 24,
+          userSelect: "none",
+        }}
+      >
+        "
+      </div>
+      {/* Stars */}
+      <div style={{ display: "flex", gap: 3, marginBottom: 16, marginTop: 8 }}>
+        {[...Array(5)].map((_, i) => (
+          <span key={i} style={{ color: "var(--accent)", fontSize: 14 }}>★</span>
+        ))}
+      </div>
+      <p style={{ fontSize: 14, color: "var(--text-secondary)", lineHeight: 1.7, fontStyle: "italic", marginBottom: 24 }}>
+        "{body}"
+      </p>
+      <div style={{ display: "flex", alignItems: "center", gap: 12 }}>
+        <div
+          style={{
+            width: 40,
+            height: 40,
+            borderRadius: "50%",
+            background: grad,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            fontSize: 12,
+            fontWeight: 800,
+            color: "#fff",
+          }}
+        >
+          {initials}
+        </div>
+        <div>
+          <div className="font-syne" style={{ fontSize: 14, fontWeight: 700, color: "var(--text-primary)" }}>{name}</div>
+          <div style={{ fontSize: 12, color: "var(--accent)" }}>{role}</div>
+        </div>
+      </div>
+    </div>
+  );
+}

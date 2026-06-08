@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Eye, EyeOff } from "lucide-react";
-import Image from "next/image";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -37,7 +36,7 @@ export default function LoginPage() {
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
           <Link href="/" className="inline-flex mb-6">
-          <Image src="/assets/logo-dark.png" alt="ListifyPH" width={160} height={40} className="h-10 w-auto" priority />
+          <img src="/logo-light.svg" alt="ListifyPH" style={{ height: 36, width: "auto" }} />
         </Link>
           <h1 className="text-2xl font-bold text-navy">Welcome back</h1>
           <p className="text-text-secondary mt-1 text-sm">Log in to your ListifyPH account</p>

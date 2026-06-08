@@ -1,6 +1,5 @@
 ﻿"use client";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
 import { LayoutDashboard, Wand2, History, Settings, TrendingUp, LogOut, ChevronRight } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
@@ -30,14 +29,7 @@ export default function Sidebar({ plan = "free" }: SidebarProps) {
     <aside className="w-64 min-h-screen bg-navy flex flex-col">
       <div className="p-6 border-b border-white/10">
         <Link href="/dashboard" className="flex items-center">
-          <Image
-            src="/assets/logo-white.png"
-            alt="ListifyPH"
-            width={140}
-            height={36}
-            className="h-9 w-auto"
-            priority
-          />
+          <img src="/logo.svg" alt="ListifyPH" style={{ height: 32, width: "auto" }} />
         </Link>
       </div>
       <nav className="flex-1 p-4 space-y-1">

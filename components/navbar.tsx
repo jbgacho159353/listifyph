@@ -1,48 +1,164 @@
-﻿"use client";
+"use client";
 import Link from "next/link";
-import Image from "next/image";
 import { useState } from "react";
 import { Menu, X } from "lucide-react";
 
 export default function Navbar() {
   const [open, setOpen] = useState(false);
+
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-brand-border">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
-        <Link href="/" className="flex items-center gap-2">
-          <Image
-            src="/assets/logo-dark.png"
-            alt="ListifyPH"
-            width={140}
-            height={36}
-            className="h-9 w-auto"
-            priority
-          />
+    <nav
+      style={{
+        position: "fixed",
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 50,
+        height: 72,
+        background: "rgba(5,9,20,0.82)",
+        backdropFilter: "blur(16px)",
+        WebkitBackdropFilter: "blur(16px)",
+        borderBottom: "1px solid rgba(148,163,184,0.08)",
+      }}
+    >
+      <div
+        style={{
+          maxWidth: 1200,
+          margin: "0 auto",
+          padding: "0 24px",
+          height: "100%",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+        }}
+      >
+        {/* Logo */}
+        <Link href="/" style={{ display: "flex", alignItems: "center" }}>
+          <img src="/logo.svg" alt="ListifyPH" style={{ height: 36, width: "auto" }} />
         </Link>
-        <div className="hidden md:flex items-center gap-8 text-sm font-medium text-text-secondary">
-          <a href="#features" className="hover:text-navy transition-colors">Features</a>
-          <a href="#how-it-works" className="hover:text-navy transition-colors">How it works</a>
-          <a href="#pricing" className="hover:text-navy transition-colors">Pricing</a>
+
+        {/* Desktop nav */}
+        <div
+          className="hidden md:flex"
+          style={{ alignItems: "center", gap: 32 }}
+        >
+          {[
+            { href: "#features", label: "Features" },
+            { href: "#how-it-works", label: "How it works" },
+            { href: "#pricing", label: "Pricing" },
+          ].map(({ href, label }) => (
+            <a
+              key={href}
+              href={href}
+              style={{
+                fontSize: 14,
+                fontWeight: 500,
+                color: "var(--text-secondary)",
+                textDecoration: "none",
+                transition: "color 0.2s",
+              }}
+              onMouseEnter={(e) => ((e.target as HTMLElement).style.color = "var(--text-primary)")}
+              onMouseLeave={(e) => ((e.target as HTMLElement).style.color = "var(--text-secondary)")}
+            >
+              {label}
+            </a>
+          ))}
         </div>
-        <div className="hidden md:flex items-center gap-3">
-          <Link href="/login" className="text-sm font-medium text-text-secondary hover:text-navy transition-colors">
+
+        {/* Desktop CTAs */}
+        <div className="hidden md:flex" style={{ alignItems: "center", gap: 12 }}>
+          <Link
+            href="/login"
+            style={{
+              fontSize: 14,
+              fontWeight: 500,
+              color: "var(--text-secondary)",
+              textDecoration: "none",
+              transition: "color 0.2s",
+              padding: "8px 16px",
+            }}
+          >
             Log in
           </Link>
-          <Link href="/signup" className="bg-navy text-white text-sm font-medium px-4 py-2 rounded-lg hover:bg-navy/90 transition-colors">
+          <Link
+            href="/signup"
+            className="btn-gradient"
+            style={{
+              fontSize: 14,
+              fontWeight: 600,
+              padding: "10px 22px",
+              borderRadius: 10,
+              textDecoration: "none",
+            }}
+          >
             Start free
           </Link>
         </div>
-        <button className="md:hidden p-2" onClick={() => setOpen(!open)}>
-          {open ? <X size={20} /> : <Menu size={20} />}
+
+        {/* Mobile hamburger */}
+        <button
+          className="md:hidden"
+          onClick={() => setOpen(!open)}
+          style={{
+            background: "none",
+            border: "none",
+            cursor: "pointer",
+            color: "var(--text-primary)",
+            padding: 8,
+          }}
+        >
+          {open ? <X size={22} /> : <Menu size={22} />}
         </button>
       </div>
+
+      {/* Mobile menu */}
       {open && (
-        <div className="md:hidden bg-white border-t border-brand-border px-4 py-4 flex flex-col gap-4">
-          <a href="#features" className="text-sm font-medium text-text-secondary" onClick={() => setOpen(false)}>Features</a>
-          <a href="#how-it-works" className="text-sm font-medium text-text-secondary" onClick={() => setOpen(false)}>How it works</a>
-          <a href="#pricing" className="text-sm font-medium text-text-secondary" onClick={() => setOpen(false)}>Pricing</a>
-          <Link href="/login" className="text-sm font-medium text-text-secondary">Log in</Link>
-          <Link href="/signup" className="bg-navy text-white text-sm font-medium px-4 py-2 rounded-lg text-center">Start free</Link>
+        <div
+          style={{
+            background: "rgba(8,13,26,0.98)",
+            backdropFilter: "blur(16px)",
+            borderTop: "1px solid rgba(148,163,184,0.08)",
+            padding: "20px 24px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+          }}
+        >
+          {["#features", "#how-it-works", "#pricing"].map((href) => (
+            <a
+              key={href}
+              href={href}
+              onClick={() => setOpen(false)}
+              style={{
+                fontSize: 15,
+                fontWeight: 500,
+                color: "var(--text-secondary)",
+                textDecoration: "none",
+              }}
+            >
+              {href === "#features" ? "Features" : href === "#how-it-works" ? "How it works" : "Pricing"}
+            </a>
+          ))}
+          <Link
+            href="/login"
+            style={{ fontSize: 15, fontWeight: 500, color: "var(--text-secondary)", textDecoration: "none" }}
+          >
+            Log in
+          </Link>
+          <Link
+            href="/signup"
+            className="btn-gradient"
+            style={{
+              fontSize: 15,
+              fontWeight: 600,
+              padding: "12px 20px",
+              borderRadius: 10,
+              textDecoration: "none",
+              textAlign: "center",
+            }}
+          >
+            Start free
+          </Link>
         </div>
       )}
     </nav>
