@@ -1,9 +1,11 @@
-﻿import { createClient } from "@/lib/supabase/server";
+import { createClient } from "@/lib/supabase/server";
 import { redirect } from "next/navigation";
 import Sidebar from "@/components/sidebar";
 import Link from "next/link";
+import { Suspense } from "react";
 import type { Listing, Profile } from "@/types";
-import { FileText, Trash2 } from "lucide-react";
+import HistoryFilters from "./history-filters";
+import DeleteButton from "./delete-button";
 
 export default async function HistoryPage({
   searchParams,
@@ -18,9 +20,7 @@ export default async function HistoryPage({
   const { data: profile } = await supabase.from("profiles").select("*").eq("id", user.id).single<Profile>();
 
   let query = supabase
-    .from("listings")
-    .select("*")
-    .eq("user_id", user.id)
+    .from("listings").select("*").eq("user_id", user.id)
     .order("created_at", { ascending: params.sort === "oldest" });
 
   if (params.q) {
@@ -30,103 +30,104 @@ export default async function HistoryPage({
   const { data: listings } = await query.returns<Listing[]>();
 
   return (
-    <div className="flex min-h-screen bg-surface">
-      <Sidebar plan={profile?.plan} />
-      <main className="flex-1 p-8">
-        <div className="max-w-5xl mx-auto">
-          <div className="mb-8">
-            <h1 className="text-2xl font-bold text-navy">Listing History</h1>
-            <p className="text-text-secondary text-sm mt-1">All your generated listings in one place.</p>
+    <div style={{ display: "flex", minHeight: "100vh", background: "#050914" }}>
+      <Sidebar plan={profile?.plan} userEmail={user.email ?? undefined} userName={profile?.full_name ?? undefined} />
+      <main style={{ flex: 1, padding: "40px 32px", overflowY: "auto" }}>
+        <div style={{ maxWidth: 1100, margin: "0 auto" }}>
+
+          {/* Header */}
+          <div style={{ marginBottom: 32 }}>
+            <h1 style={{ fontFamily: "Syne, sans-serif", fontWeight: 700, fontSize: "1.8rem", color: "#F0F4FF", margin: 0 }}>
+              📋 Listing History
+            </h1>
+            <p style={{ color: "#7A8BA8", margin: "6px 0 0", fontSize: "0.95rem" }}>
+              All your generated listings in one place.
+            </p>
           </div>
 
-          <div className="flex items-center gap-3 mb-6">
-            <form className="flex-1">
-              <input
-                name="q"
-                defaultValue={params.q}
-                type="search"
-                placeholder="Search by location or property type..."
-                className="w-full max-w-sm border border-brand-border rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-accent-blue/30 focus:border-accent-blue"
-              />
-            </form>
-            <select
-              name="sort"
-              defaultValue={params.sort}
-              className="border border-brand-border rounded-xl px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-accent-blue/30"
-              onChange={(e) => {
-                const url = new URL(window.location.href);
-                url.searchParams.set("sort", e.target.value);
-                window.location.href = url.toString();
-              }}
-            >
-              <option value="newest">Newest first</option>
-              <option value="oldest">Oldest first</option>
-            </select>
-          </div>
+          {/* Filters */}
+          <Suspense fallback={null}>
+            <HistoryFilters defaultQ={params.q} defaultSort={params.sort} />
+          </Suspense>
 
-          <div className="bg-white rounded-2xl border border-brand-border overflow-hidden">
-            {!listings || listings.length === 0 ? (
-              <div className="p-16 text-center">
-                <FileText size={40} className="text-brand-border mx-auto mb-4" />
-                <p className="text-navy font-medium mb-2">No listings found</p>
-                <p className="text-text-secondary text-sm mb-6">
-                  {params.q ? "Try a different search term." : "Generate your first listing to see it here."}
-                </p>
-                <Link href="/generate" className="bg-navy text-white px-5 py-2.5 rounded-xl font-medium text-sm hover:bg-navy/90 transition-colors">
-                  Generate a listing
-                </Link>
-              </div>
-            ) : (
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-brand-border bg-surface">
-                    <th className="text-left py-3 px-4 font-medium text-text-secondary">Property</th>
-                    <th className="text-left py-3 px-4 font-medium text-text-secondary hidden md:table-cell">Price</th>
-                    <th className="text-left py-3 px-4 font-medium text-text-secondary hidden lg:table-cell">Language</th>
-                    <th className="text-left py-3 px-4 font-medium text-text-secondary hidden lg:table-cell">Style</th>
-                    <th className="text-left py-3 px-4 font-medium text-text-secondary hidden sm:table-cell">Date</th>
-                    <th className="py-3 px-4" />
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-brand-border">
-                  {listings.map((listing) => (
-                    <tr key={listing.id} className="hover:bg-surface transition-colors">
-                      <td className="py-3.5 px-4">
-                        <p className="font-medium text-navy">{listing.property_type}</p>
-                        <p className="text-text-secondary text-xs">{listing.location}</p>
-                      </td>
-                      <td className="py-3.5 px-4 text-text-secondary hidden md:table-cell">{listing.price}</td>
-                      <td className="py-3.5 px-4 hidden lg:table-cell">
-                        <span className="bg-accent-blue/10 text-accent-blue text-xs font-medium px-2 py-0.5 rounded-full capitalize">{listing.language}</span>
-                      </td>
-                      <td className="py-3.5 px-4 text-text-secondary capitalize hidden lg:table-cell">{listing.ad_style}</td>
-                      <td className="py-3.5 px-4 text-text-secondary text-xs hidden sm:table-cell">
-                        {new Date(listing.created_at).toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" })}
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <div className="flex items-center gap-2 justify-end">
-                          <Link href={`/history/${listing.id}`} className="text-accent-blue text-xs font-medium hover:underline">View</Link>
-                          <DeleteButton id={listing.id} />
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            )}
-          </div>
+          {/* Empty state */}
+          {!listings || listings.length === 0 ? (
+            <div style={{
+              background: "#0c1220", border: "1px solid rgba(148,163,184,0.08)",
+              borderRadius: 14, padding: "64px 24px", textAlign: "center",
+            }}>
+              <div style={{ fontSize: "3.5rem", marginBottom: 16 }}>📄</div>
+              <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, color: "#F0F4FF", margin: "0 0 8px", fontSize: "1.1rem" }}>
+                {params.q ? "No listings found" : "No listings yet"}
+              </p>
+              <p style={{ color: "#7A8BA8", fontSize: "0.875rem", margin: "0 0 28px" }}>
+                {params.q ? "Try a different search term." : "Generate your first listing to see it here."}
+              </p>
+              <Link href="/generate" className="btn-grad-sm">
+                ✨ Generate a listing
+              </Link>
+            </div>
+          ) : (
+            <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(300px, 1fr))", gap: 20 }}>
+              {listings.map((listing) => (
+                <div key={listing.id} className="history-card">
+                  {/* Type badge + date */}
+                  <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginBottom: 12 }}>
+                    <span style={{
+                      background: "rgba(59,130,246,0.1)", color: "#3B82F6",
+                      fontSize: "0.7rem", fontWeight: 700,
+                      padding: "4px 10px", borderRadius: 100,
+                      textTransform: "uppercase", letterSpacing: "0.5px",
+                    }}>
+                      {listing.property_type}
+                    </span>
+                    <span style={{ color: "#7A8BA8", fontSize: "0.75rem" }}>
+                      {new Date(listing.created_at).toLocaleDateString("en-PH", { month: "short", day: "numeric", year: "numeric" })}
+                    </span>
+                  </div>
+
+                  {/* Location */}
+                  <p style={{ fontFamily: "Syne, sans-serif", fontWeight: 600, color: "#F0F4FF", fontSize: "1rem", margin: "0 0 4px" }}>
+                    {listing.location}
+                  </p>
+
+                  {/* Price */}
+                  <p style={{ color: "#3B82F6", fontWeight: 600, fontSize: "0.95rem", margin: "0 0 14px", fontFamily: "Inter, sans-serif" }}>
+                    {listing.price}
+                  </p>
+
+                  {/* Language + Style badges */}
+                  <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginBottom: 16 }}>
+                    <span style={{ background: "rgba(168,85,247,0.1)", color: "#C084FC", fontSize: "0.7rem", fontWeight: 600, padding: "3px 8px", borderRadius: 6, textTransform: "capitalize" }}>
+                      {listing.language}
+                    </span>
+                    <span style={{ background: "rgba(34,197,94,0.1)", color: "#4ADE80", fontSize: "0.7rem", fontWeight: 600, padding: "3px 8px", borderRadius: 6, textTransform: "capitalize" }}>
+                      {listing.ad_style}
+                    </span>
+                  </div>
+
+                  {/* Actions */}
+                  <div style={{ display: "flex", gap: 8 }}>
+                    <Link
+                      href={`/history/${listing.id}`}
+                      style={{
+                        display: "inline-flex", alignItems: "center",
+                        padding: "6px 14px", borderRadius: 6,
+                        border: "1px solid rgba(59,130,246,0.3)",
+                        color: "#3B82F6", fontSize: "0.8rem", fontWeight: 600,
+                        textDecoration: "none",
+                      }}
+                    >
+                      View
+                    </Link>
+                    <DeleteButton id={listing.id} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </main>
     </div>
-  );
-}
-
-function DeleteButton({ id }: { id: string }) {
-  return (
-    <form action={`/api/listings/${id}/delete`} method="POST">
-      <button type="submit" className="text-text-secondary hover:text-red-500 transition-colors p-1">
-        <Trash2 size={14} />
-      </button>
-    </form>
   );
 }

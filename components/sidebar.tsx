@@ -1,7 +1,8 @@
-﻿"use client";
+"use client";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { LayoutDashboard, Wand2, History, Settings, TrendingUp, LogOut, ChevronRight } from "lucide-react";
+import { useState } from "react";
+import { LayoutDashboard, Wand2, History, Settings, LogOut, Zap, Menu, X } from "lucide-react";
 import { createClient } from "@/lib/supabase/client";
 
 const navItems = [
@@ -13,11 +14,14 @@ const navItems = [
 
 interface SidebarProps {
   plan?: string;
+  userEmail?: string;
+  userName?: string;
 }
 
-export default function Sidebar({ plan = "free" }: SidebarProps) {
+export default function Sidebar({ plan = "free", userEmail, userName }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
+  const [mobileOpen, setMobileOpen] = useState(false);
 
   async function handleLogout() {
     const supabase = createClient();
@@ -25,51 +29,143 @@ export default function Sidebar({ plan = "free" }: SidebarProps) {
     router.push("/login");
   }
 
-  return (
-    <aside className="w-64 min-h-screen bg-navy flex flex-col">
-      <div className="p-6 border-b border-white/10">
-        <Link href="/dashboard" className="flex items-center">
-          <img src="/logo.svg" alt="ListifyPH" style={{ height: 32, width: "auto" }} />
+  const initials = userName
+    ? userName.split(" ").map((w: string) => w[0]).join("").slice(0, 2).toUpperCase()
+    : userEmail?.[0]?.toUpperCase() ?? "U";
+
+  const sidebarContent = (
+    <aside
+      style={{
+        width: 260,
+        minHeight: "100vh",
+        background: "#080d1a",
+        borderRight: "1px solid rgba(148,163,184,0.08)",
+        display: "flex",
+        flexDirection: "column",
+        flexShrink: 0,
+      }}
+    >
+      {/* Logo */}
+      <div style={{ padding: "24px 20px 20px", borderBottom: "1px solid rgba(148,163,184,0.08)", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
+        <Link href="/dashboard" style={{ display: "inline-flex" }}>
+          <img src="/logo.svg" alt="ListifyPH" style={{ height: 36, width: "auto" }} />
         </Link>
+        <button
+          onClick={() => setMobileOpen(false)}
+          className="sidebar-close-btn"
+          style={{ background: "none", border: "none", cursor: "pointer", color: "#7A8BA8", padding: 4, display: "none" }}
+        >
+          <X size={20} />
+        </button>
       </div>
-      <nav className="flex-1 p-4 space-y-1">
+
+      {/* Nav */}
+      <nav style={{ flex: 1, padding: "16px 12px", display: "flex", flexDirection: "column", gap: 4 }}>
         {navItems.map(({ href, label, icon: Icon }) => {
           const active = pathname === href || pathname.startsWith(href + "/");
           return (
             <Link
               key={href}
               href={href}
-              className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors ${
-                active
-                  ? "bg-white/10 text-white"
-                  : "text-white/60 hover:text-white hover:bg-white/5"
-              }`}
+              onClick={() => setMobileOpen(false)}
+              className={`sidebar-nav-link${active ? " active" : ""}`}
             >
               <Icon size={18} />
               {label}
             </Link>
           );
         })}
+
         {plan === "free" && (
-          <Link
-            href="/pricing"
-            className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-accent-blue hover:bg-accent-blue/10 transition-colors mt-2"
-          >
-            <TrendingUp size={18} />
-            Upgrade
-            <ChevronRight size={14} className="ml-auto" />
+          <Link href="/pricing" onClick={() => setMobileOpen(false)} className="sidebar-upgrade-link">
+            <Zap size={18} />
+            Upgrade to Pro
           </Link>
         )}
       </nav>
-      <div className="p-4 border-t border-white/10">
-        <button
-          onClick={handleLogout}
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-white/60 hover:text-white hover:bg-white/5 transition-colors w-full"
-        >
+
+      {/* User + Logout */}
+      <div style={{ padding: "16px 12px", borderTop: "1px solid rgba(148,163,184,0.08)" }}>
+        {(userEmail || userName) && (
+          <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "8px 12px", marginBottom: 8 }}>
+            <div style={{
+              width: 36, height: 36, borderRadius: "50%",
+              background: "linear-gradient(135deg, #1D4ED8, #3B82F6)",
+              display: "flex", alignItems: "center", justifyContent: "center",
+              fontSize: "0.75rem", fontWeight: 700, color: "#fff", flexShrink: 0,
+            }}>
+              {initials}
+            </div>
+            <div style={{ overflow: "hidden", minWidth: 0 }}>
+              {userName && (
+                <p style={{ fontSize: "0.8rem", fontWeight: 600, color: "#F0F4FF", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {userName}
+                </p>
+              )}
+              {userEmail && (
+                <p style={{ fontSize: "0.72rem", color: "#7A8BA8", margin: 0, overflow: "hidden", textOverflow: "ellipsis", whiteSpace: "nowrap" }}>
+                  {userEmail}
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+        <button onClick={handleLogout} className="sidebar-logout-btn">
           <LogOut size={18} />
           Logout
         </button>
       </div>
     </aside>
+  );
+
+  return (
+    <>
+      {/* Mobile hamburger */}
+      <button
+        onClick={() => setMobileOpen(true)}
+        className="sidebar-hamburger"
+        style={{
+          position: "fixed", top: 16, left: 16, zIndex: 60,
+          background: "#0c1220", border: "1px solid rgba(148,163,184,0.15)",
+          borderRadius: 8, padding: "8px 10px", cursor: "pointer", color: "#F0F4FF",
+          display: "none", alignItems: "center",
+        }}
+      >
+        <Menu size={20} />
+      </button>
+
+      {/* Mobile overlay */}
+      {mobileOpen && (
+        <div
+          onClick={() => setMobileOpen(false)}
+          className="sidebar-overlay"
+          style={{
+            position: "fixed", inset: 0, background: "rgba(0,0,0,0.6)",
+            zIndex: 49, display: "none",
+          }}
+        />
+      )}
+
+      {/* Sidebar wrapper — desktop static, mobile fixed/slide-in */}
+      <div className={`sidebar-wrapper${mobileOpen ? " mobile-open" : ""}`} style={{ display: "contents" }}>
+        {sidebarContent}
+      </div>
+
+      <style>{`
+        @media (max-width: 768px) {
+          .sidebar-hamburger { display: flex !important; }
+          .sidebar-overlay { display: block !important; }
+          .sidebar-close-btn { display: block !important; }
+          .sidebar-wrapper { display: block !important; }
+          .sidebar-wrapper > aside {
+            position: fixed; left: 0; top: 0; bottom: 0;
+            z-index: 50; min-height: 100dvh;
+            transform: translateX(-100%);
+            transition: transform 0.28s ease;
+          }
+          .sidebar-wrapper.mobile-open > aside { transform: translateX(0); }
+        }
+      `}</style>
+    </>
   );
 }
