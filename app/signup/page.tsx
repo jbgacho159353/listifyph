@@ -1,12 +1,10 @@
 ﻿"use client";
 import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
 import { createClient } from "@/lib/supabase/client";
 import { Eye, EyeOff } from "lucide-react";
 
 export default function SignupPage() {
-  const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [name, setName] = useState("");
@@ -14,6 +12,7 @@ export default function SignupPage() {
   const [agreed, setAgreed] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [success, setSuccess] = useState(false);
 
   async function handleSignup(e: React.FormEvent) {
     e.preventDefault();
@@ -30,7 +29,8 @@ export default function SignupPage() {
       },
     });
     if (signUpError) { setError(signUpError.message); setLoading(false); return; }
-    router.push("/dashboard");
+    setSuccess(true);
+    setLoading(false);
   }
 
   async function handleGoogle() {
@@ -39,6 +39,31 @@ export default function SignupPage() {
       provider: "google",
       options: { redirectTo: `${process.env.NEXT_PUBLIC_APP_URL}/auth/callback` },
     });
+  }
+
+  if (success) {
+    return (
+      <div style={{ minHeight: "100vh", background: "#F8FAFC", display: "flex", alignItems: "center", justifyContent: "center", padding: "24px 16px" }}>
+        <div style={{ width: "100%", maxWidth: 448, textAlign: "center" }}>
+          <Link href="/" style={{ display: "inline-flex", marginBottom: 24 }}>
+            <img src="/logo-light.svg" alt="ListifyPH" style={{ height: 36, width: "auto" }} />
+          </Link>
+          <div style={{ background: "#ffffff", borderRadius: 16, border: "1px solid #E2E8F0", padding: 40, boxShadow: "0 1px 4px rgba(0,0,0,0.06)" }}>
+            <div style={{ width: 56, height: 56, borderRadius: "50%", background: "rgba(59,130,246,0.1)", display: "flex", alignItems: "center", justifyContent: "center", margin: "0 auto 20px", fontSize: 26 }}>📧</div>
+            <h2 style={{ fontSize: "1.25rem", fontWeight: 700, color: "#0F172A", marginBottom: 12 }}>Account created!</h2>
+            <div style={{ background: "rgba(59,130,246,0.07)", border: "1px solid rgba(59,130,246,0.2)", borderRadius: 10, padding: "14px 18px", marginBottom: 20, textAlign: "left" }}>
+              <p style={{ fontSize: "0.875rem", color: "#1E40AF", lineHeight: 1.7, margin: 0 }}>
+                Please check your email at <strong>{email}</strong> and click the verification link before logging in.
+              </p>
+            </div>
+            <p style={{ fontSize: 13, color: "#94A3B8", marginBottom: 24 }}>Didn&apos;t receive it? Check your spam folder.</p>
+            <Link href="/login" style={{ display: "block", background: "linear-gradient(135deg,#1D4ED8,#3B82F6)", color: "#ffffff", borderRadius: 10, padding: "13px 0", fontSize: "0.875rem", fontWeight: 600, textDecoration: "none" }}>
+              Go to login
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
