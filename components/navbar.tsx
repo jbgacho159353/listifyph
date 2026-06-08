@@ -27,9 +27,9 @@ export default function Navbar() {
   }, []);
 
   const links = [
-    { href: "#features", label: "Features" },
-    { href: "#how-it-works", label: "How it works" },
-    { href: "#pricing", label: "Pricing" },
+    { href: "/#features", label: "Features" },
+    { href: "/#how-it-works", label: "How it works" },
+    { href: "/#pricing", label: "Pricing" },
   ];
 
   return (
@@ -51,7 +51,7 @@ export default function Navbar() {
 
         <div className="hidden md:flex" style={{ alignItems: "center", gap: 32 }}>
           {links.map(({ href, label }) => {
-            const active = activeHash === href;
+            const active = !!activeHash && href.endsWith(activeHash);
             return (
               <a key={href} href={href}
                 style={{
@@ -101,7 +101,7 @@ export default function Navbar() {
         }}>
           {links.map(({ href, label }) => (
             <a key={href} href={href} onClick={() => setOpen(false)}
-              style={{ fontSize: 15, fontWeight: 500, color: activeHash === href ? "var(--text-primary)" : "var(--text-secondary)", textDecoration: "none" }}
+              style={{ fontSize: 15, fontWeight: 500, color: (!!activeHash && href.endsWith(activeHash)) ? "var(--text-primary)" : "var(--text-secondary)", textDecoration: "none" }}
             >{label}</a>
           ))}
           <Link href="/login" style={{ fontSize: 15, fontWeight: 500, color: "var(--text-secondary)", textDecoration: "none" }}>Log in</Link>
