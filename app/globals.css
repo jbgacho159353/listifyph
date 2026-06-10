@@ -334,3 +334,7 @@ body {
 }
 .btn-grad-sm:hover { opacity: 0.88; transform: translateY(-1px); }
 .btn-grad-sm:disabled { opacity: 0.45; cursor: not-allowed; transform: none; }
+
+/* ── Spinner ── */
+.spin-anim { animation: spin 1s linear infinite; }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
