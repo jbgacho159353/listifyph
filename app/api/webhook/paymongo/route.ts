@@ -1,54 +1,36 @@
-﻿import { createClient } from "@/lib/supabase/server";
-import { NextResponse } from "next/server";
-import { sendProUpgradeEmail } from "@/lib/emails";
-import crypto from "crypto";
+import { createClient } from '@supabase/supabase-js'
+import { NextResponse } from 'next/server'
 
-export async function POST(request: Request) {
-  const body = await request.text();
-  const signature = request.headers.get("x-paymongo-signature") ?? "";
+const supabase = createClient(
+  process.env.NEXT_PUBLIC_SUPABASE_URL!,
+  process.env.SUPABASE_SECRET_KEY!
+)
 
-  // Verify webhook signature
-  const secret = process.env.PAYMONGO_SECRET_KEY ?? "";
-  const hmac = crypto.createHmac("sha256", secret).update(body).digest("hex");
-  if (hmac !== signature) {
-    return NextResponse.json({ error: "Invalid signature" }, { status: 400 });
-  }
+export async function POST(req: Request) {
+  const body = await req.text()
+  const payload = JSON.parse(body)
 
-  const event = JSON.parse(body);
-  const eventType = event?.data?.attributes?.type;
+  const eventType = payload.data?.attributes?.type
+  console.log('Webhook event:', eventType)
 
-  if (eventType === "payment.paid" || eventType === "checkout_session.payment.paid") {
-    const metadata = event?.data?.attributes?.data?.attributes?.metadata ?? {};
-    const userId = metadata?.user_id;
-    const plan = metadata?.plan ?? "pro";
+  if (
+    eventType === 'link.payment.paid' ||
+    eventType === 'payment.paid'
+  ) {
+    const metadata = payload.data?.attributes?.data?.attributes?.metadata
+    const userId = metadata?.user_id
 
-    if (!userId) return NextResponse.json({ error: "No user_id in metadata" }, { status: 400 });
+    console.log('Upgrading user:', userId)
 
-    const supabase = await createClient();
+    if (userId) {
+      const { error } = await supabase
+        .from('profiles')
+        .update({ plan: 'pro' })
+        .eq('id', userId)
 
-    // Update profile plan
-    await supabase.from("profiles").update({ plan }).eq("id", userId);
-
-    // Upsert subscription record
-    await supabase.from("subscriptions").upsert({
-      user_id: userId,
-      plan,
-      status: "active",
-      paymongo_subscription_id: event?.data?.id ?? null,
-      current_period_end: new Date(Date.now() + 30 * 24 * 60 * 60 * 1000).toISOString(),
-    }, { onConflict: "user_id" });
-
-    // Get user email for confirmation
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("email, full_name")
-      .eq("id", userId)
-      .single();
-
-    if (profile?.email) {
-      await sendProUpgradeEmail(profile.email, profile.full_name ?? "there");
+      console.log('Upgrade result:', error)
     }
   }
 
-  return NextResponse.json({ received: true });
+  return NextResponse.json({ received: true })
 }

@@ -200,6 +200,20 @@ body {
 }
 .sidebar-logout-btn:hover { background: rgba(255,255,255,0.04); color: #F0F4FF; }
 
+@media (max-width: 768px) {
+  .sidebar-hamburger { display: flex !important; }
+  .sidebar-overlay { display: block !important; }
+  .sidebar-close-btn { display: block !important; }
+  .sidebar-wrapper { display: block !important; }
+  .sidebar-wrapper > aside {
+    position: fixed; left: 0; top: 0; bottom: 0;
+    z-index: 50; min-height: 100dvh;
+    transform: translateX(-100%);
+    transition: transform 0.28s ease;
+  }
+  .sidebar-wrapper.mobile-open > aside { transform: translateX(0); }
+}
+
 /* ── Dark form elements (dashboard pages) ── */
 .form-input-dark {
   background: #111827;

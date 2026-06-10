@@ -151,21 +151,6 @@ export default function Sidebar({ plan = "free", userEmail, userName }: SidebarP
         {sidebarContent}
       </div>
 
-      <style>{`
-        @media (max-width: 768px) {
-          .sidebar-hamburger { display: flex !important; }
-          .sidebar-overlay { display: block !important; }
-          .sidebar-close-btn { display: block !important; }
-          .sidebar-wrapper { display: block !important; }
-          .sidebar-wrapper > aside {
-            position: fixed; left: 0; top: 0; bottom: 0;
-            z-index: 50; min-height: 100dvh;
-            transform: translateX(-100%);
-            transition: transform 0.28s ease;
-          }
-          .sidebar-wrapper.mobile-open > aside { transform: translateX(0); }
-        }
-      `}</style>
     </>
   );
 }
